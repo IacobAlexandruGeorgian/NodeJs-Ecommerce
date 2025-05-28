@@ -5,6 +5,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
 const crypto = require('crypto');
+const { castObject } = require('../models/tourModel');
 
 const signToken = id => {
     return jwt.sign({id}, process.env.JWT_SECRET, {
@@ -55,10 +56,20 @@ exports.login = catchAsync(async (req, res, next) => {
     createSendToken(newUser, 200, res);
 });
 
+exports.logout = (req, res) => {
+    res.cookie('jwt', 'logged out' , {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
+    res.status(200).json({status: 'success'});
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         const token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookie.jwt) {
+        token = req.cookie.jwt;
     };
 
     if (!token) {
@@ -78,9 +89,36 @@ exports.protect = catchAsync(async (req, res, next) => {
     };
     
     req.user = currentUser;
-
+    res.locals.user = currentUser;
     next();
 });
+
+exports.isLoggedIn = async (req, res, next) => {
+
+    if (req.cookies.jwt) {
+        try {
+            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+
+            const currentUser = await User.findById(decoded.id);
+
+            if (!currentUser) {
+                return next();
+            }
+
+            if (currentUser.changedPasswordAfter(decoded.iat)) {
+                return next();
+            };
+
+            res.locals.user = currentUser;
+
+            return next();
+        } catch(err) {
+            return next();
+        }  
+    }
+
+    next();
+};
 
 exports.restrictTo = (...roles) => {
     return (req, res, next) => {
