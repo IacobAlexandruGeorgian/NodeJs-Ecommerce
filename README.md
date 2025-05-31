@@ -21,7 +21,8 @@ The project contains:
 
 ![image](https://github.com/user-attachments/assets/71eea17b-21de-4a58-81ff-c78986c335a9)
 
-![image](https://github.com/user-attachments/assets/b32d25f3-faa9-4f62-a982-db92e85344b8)
+![image](https://github.com/user-attachments/assets/948dbe8b-3302-4773-b3c0-e2ce002d7814)
+
 
 
 
