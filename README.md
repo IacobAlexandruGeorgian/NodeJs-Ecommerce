@@ -1,11 +1,11 @@
 ﻿# NodeJs
  
 Details about the project:
-    - nodejs 10
-    - express
-    - mongoDB
-    - mongoose
-    - stripe
+   - nodejs 10
+   - express
+   - mongoDB
+   - mongoose
+   - stripe
 
 The project contains:
 - Authentification (Login + Authorization)
